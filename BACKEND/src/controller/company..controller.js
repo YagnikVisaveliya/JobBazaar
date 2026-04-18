@@ -228,16 +228,23 @@ export const updateCompany = async (req, res) => {
     const { name, description, website, location } = req.body;
     const file = req.file;
 
-    
-    // if (file) {
-        //   // In future, replace this with Cloudinary upload
-        //   updateData.logo = file.path; // or any mock/test value
-        // }
-    const fileUri = getDataUri(file);
-    const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
-    const logo = cloudResponse.secure_url;
-    
-    const updateData = { name, description, website, location, logo};
+        const updateData = {
+            name,
+            description,
+            website,
+            location
+        };
+
+        if (file) {
+            try {
+                const fileUri = getDataUri(file);
+                const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+                updateData.logo = cloudResponse?.secure_url;
+            } catch (uploadError) {
+                // Keep update working even when Cloudinary is misconfigured in local/dev.
+                console.error("Company logo upload failed:", uploadError?.message || uploadError);
+            }
+        }
 
     const company = await Company.findByIdAndUpdate(req.params.id, updateData, { new: true });
 

@@ -32,12 +32,22 @@ const register = asyncHandler(async (req, res) => {
     console.log(fullname, email, phoneNumber, password, role);
 
 
-    if ([fullname, email, phoneNumber, password, role].some((fields) => fields?.trim() === "")) {
+    if ([fullname, email, phoneNumber, password, role].some((fields) => !String(fields ?? "").trim())) {
         throw new ApiError(400, "All fields are required");
     }
     const file = req.file;
-    const fileUri = dataUri(file);
-    const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+    let profilePhoto = "";
+
+    if (file) {
+        try {
+            const fileUri = dataUri(file);
+            const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+            profilePhoto = cloudResponse?.secure_url || "";
+        } catch (error) {
+            // Do not fail registration when avatar upload fails in local/dev.
+            console.error("Profile photo upload failed:", error?.message || error);
+        }
+    }
 
     // Here you would typically check if the user already exists in your database
     const existedUser = await User.findOne({
@@ -54,7 +64,7 @@ const register = asyncHandler(async (req, res) => {
         password,
         role,
         profile: {
-            profilePhoto: cloudResponse.secure_url,
+            profilePhoto,
         }
     })
 
