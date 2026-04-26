@@ -77,6 +77,7 @@ import FilterCard from './FilterCard'
 import Job from './Job'
 import { useSelector } from 'react-redux'
 import { motion } from 'framer-motion'
+import { matchesJobQuery } from '@/utils/jobFilters'
 
 // const jobsArray = [1, 2, 3, 4, 5, 6, 7, 8];
 
@@ -85,17 +86,8 @@ function Jobs() {
     const [filterJobs, setFilterJobs] = useState(allJobs);
 
     useEffect(() => {
-        if(searchJob){
-            const filteredJobs = allJobs.filter((job) => {
-                return job.title.toLowerCase().includes(searchJob.toLowerCase()) ||
-                job.description.toLowerCase().includes(searchJob.toLowerCase()) ||
-                job.location.toLowerCase().includes(searchJob.toLowerCase());
-            }
-            );
-            setFilterJobs(filteredJobs);
-        }else{
-            setFilterJobs(allJobs);
-        }
+        const filteredJobs = allJobs.filter((job) => matchesJobQuery(job, searchJob));
+        setFilterJobs(filteredJobs);
     }, [allJobs, searchJob]);
 
     return (
@@ -112,6 +104,7 @@ function Jobs() {
                                 <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4'>
                                     {filterJobs.map((job) => (
                                         <motion.div 
+                                        className='h-full'
                                         initial={{ opacity: 0, x: 100 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         exit={{opacity:0, x:-100}}

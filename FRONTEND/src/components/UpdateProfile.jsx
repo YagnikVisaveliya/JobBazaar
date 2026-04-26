@@ -101,12 +101,12 @@ const UpdateProfile = ({ open, setOpen }) => {
             });
 
             dispatch(setUser(res.data.data));
-            toast.success(res.data.message);
+            toast.success(res.data.message || "Profile updated successfully.");
             setOpen(false); 
 
         } catch (error) {
             console.log(error);
-            toast.error(error.response?.data?.message || "An error occurred.");
+            toast.error(error.response?.data?.message || "Unable to update your profile. Please try again.");
         } finally {
             setLoading(false);
         }

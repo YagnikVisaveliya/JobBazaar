@@ -72,11 +72,11 @@ import { setSearchJob } from '@/redux/jobSlice';
 const filterData = [
     {
         filterType:"Location",
-        array:['Delhi','Bengaluru','Gujarat','Pune','Mumbai','Hyderabad','Noida']
+        array:['Gujarat','Maharashtra','Delhi','Karnataka','Telangana','Uttar Pradesh','Tamil Nadu','Punjab','Rajasthan']
     },
     {
         filterType:"Industry",
-        array:['Frontend Developer','Backend Devloper','Software Engineer','Cloud Engineer','Data Analyst']
+        array:['Frontend Developer','Backend Developer','Software Engineer','Cloud Engineer','Data Analyst']
     },
     {
         filterType:"Salary",
@@ -86,7 +86,7 @@ const filterData = [
 
 function FilterCard() {
 
-    const [selectedValue, setSelectedValue] = useState(null);
+    const [selectedValue, setSelectedValue] = useState("");
     const dispatch = useDispatch();
     const changeHandler = (value) => {
         setSelectedValue(value);

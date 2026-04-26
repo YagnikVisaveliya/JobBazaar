@@ -42,12 +42,12 @@ function Login() {
       if (res.data.success) {
         dispatch(setUser(res.data.data.user));
         navigate("/");
-        toast.success(res.data.message);
+        toast.success(res.data.message || "Logged in successfully.");
       }
 
     } catch (error) {
       console.error("Login error:", error);
-      toast.error(error.response?.data?.message || "Login failed, please try again");
+      toast.error(error.response?.data?.message || "Unable to log in. Please check your credentials and try again.");
     }
     finally {
       dispatch(setLoading(false));

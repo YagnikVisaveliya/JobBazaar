@@ -61,12 +61,12 @@ function CompanySetup() {
             })
             // console.log(res);
             // console.log("hit");
-            toast.success(res.data.message);
+            toast.success(res.data.message || "Company details updated successfully.");
             navigate('/admin/companies')
 
         } catch (error) {
             console.log(error);
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || "Unable to update company details. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -95,8 +95,8 @@ function CompanySetup() {
                         <h1 className='font-bold text-xl'>Company Setup</h1>
                     </div>
                     <div className='grid grid-cols-1 mt-10'>
-                        <div className='flex gap-5 mb-5'>
-                            <Label>Company Name</Label>
+                        <div className='grid grid-cols-[140px_1fr] items-center gap-5 mb-5'>
+                            <Label className='leading-tight'>Company Name</Label>
                             <Input
                                 type='text'
                                 name='name'
@@ -104,7 +104,7 @@ function CompanySetup() {
                                 onChange={changeEventHandler}
                             />
                         </div>
-                        <div className='flex gap-5 mb-5'>
+                        <div className='grid grid-cols-[140px_1fr] items-center gap-5 mb-5'>
                             <Label>Description</Label>
                             <Input
                                 type='text'
@@ -113,7 +113,7 @@ function CompanySetup() {
                                 onChange={changeEventHandler}
                             />
                         </div>
-                        <div className='flex gap-5 mb-5'>
+                        <div className='grid grid-cols-[140px_1fr] items-center gap-5 mb-5'>
                             <Label>Website</Label>
                             <Input
                                 type='text'
@@ -122,7 +122,7 @@ function CompanySetup() {
                                 onChange={changeEventHandler}
                             />
                         </div>
-                        <div className='flex gap-5 mb-5'>
+                        <div className='grid grid-cols-[140px_1fr] items-center gap-5 mb-5'>
                             <Label>Location</Label>
                             <Input
                                 type='text'
@@ -131,7 +131,7 @@ function CompanySetup() {
                                 onChange={changeEventHandler}
                             />
                         </div>
-                        <div className='flex gap-5 mb-5'>
+                        <div className='grid grid-cols-[140px_1fr] items-center gap-5 mb-5'>
                             <Label>Logo</Label>
                             <Input
                                 type='file'

@@ -26,12 +26,13 @@ function CreateCompany() {
             });
             if(res?.data?.success){
                 dispatch(setSingleCompany(res.data.company));
-                toast.success(res.data.message);
+                toast.success(res.data.message || "Company created successfully.");
                 const companyId = res?.data?.company?._id;
                 navigate(`/admin/companies/${companyId}`);
             }
         } catch (error) {
             console.log(error);
+            toast.error(error.response?.data?.message || "Unable to create company. Please try again.");
             
         }
     }

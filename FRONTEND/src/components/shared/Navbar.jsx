@@ -27,11 +27,11 @@ const Navbar = () => {
       if (res.data.success) {
         dispatch(setUser(null));
         navigate("/");
-        toast.success(res.data.message || "Logged out");
+        toast.success(res.data.message || "Logged out successfully.");
       }
     } catch (error) {
       console.log(error);
-      toast.error(error.response?.data?.message || "Logout failed");
+      toast.error(error.response?.data?.message || "Unable to log out. Please try again.");
     }
   };
 
@@ -61,11 +61,6 @@ const Navbar = () => {
               <>
                 <li><Link to="/admin/companies">Companies</Link></li>
                 <li><Link to="/admin/jobs">Jobs</Link></li>
-                <li>
-                  <Button variant="link" onClick={logoutHandler}>
-                      Logout
-                    </Button>
-                </li>
               </>
             ) : (
               <>

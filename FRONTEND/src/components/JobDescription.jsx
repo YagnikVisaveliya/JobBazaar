@@ -100,14 +100,14 @@ const JobDescription = () => {
     const applyJobHandler = async () => {
         try {
             const res = await axios.post(`${APPLICATION_URL}/apply/${jobId}`, null, { withCredentials: true });
-            toast.success(res.data.message);
+            toast.success(res.data.message || "Application submitted successfully.");
             setIsApplied(true); // update with local state
             const updatedSingleJob = {...singleJob,applications:[...singleJob.applications,{applicant:user?._id}]}
             dispatch(setSingleJob(updatedSingleJob)) // this for real time ui update
         }   
         catch(error){
             console.log(error);
-            toast.error(error.response?.data?.message );
+            toast.error(error.response?.data?.message || "Unable to apply for this job right now.");
         }
     }
 

@@ -9,24 +9,43 @@ export const postJob = asyncHandler(async (req, res) => {
     const { title, description, requirements, location, salary, jobType, experience, position, companyId } = req.body;
     const userId = req.user._id;
 
+    const requiredFields = { title, description, requirements, location, salary, jobType, experience, position, companyId };
+    const hasMissingField = Object.values(requiredFields).some(
+        (field) => field === undefined || field === null || String(field).trim() === ""
+    );
 
-    if ([title, description, requirements, jobType, location, salary, experience, position, companyId].some((fields) => fields?.trim() === "")) {
-        return res.status(404).json({
-        message: "All fields are required.",
-        success: false
-      });
+    if (hasMissingField) {
+        throw new ApiError(400, "All fields are required.");
+    }
+
+    const normalizedJobType = String(jobType).trim();
+    const allowedJobTypes = ["Full-time", "Part-time", "Temporary", "Internship"];
+    if (!allowedJobTypes.includes(normalizedJobType)) {
+        throw new ApiError(400, `jobType must be one of: ${allowedJobTypes.join(", ")}`);
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(companyId)) {
+        throw new ApiError(400, "Invalid company ID.");
+    }
+
+    const parsedSalary = Number(salary);
+    const parsedExperience = Number(experience);
+    const parsedPosition = Number(position);
+
+    if ([parsedSalary, parsedExperience, parsedPosition].some((num) => Number.isNaN(num))) {
+        throw new ApiError(400, "Salary, experience and position must be valid numbers.");
     }
 
 
     const job = await Job.create({
         title,
         description,
-        requirements: requirements.split(','),
+        requirements: String(requirements).split(',').map((item) => item.trim()).filter(Boolean),
         location,
-        salary: Number(salary),
-        jobType,
-        experience,
-        position,
+        salary: parsedSalary,
+        jobType: normalizedJobType,
+        experience: parsedExperience,
+        position: parsedPosition,
         company: companyId,
         created_By: userId,
 
@@ -36,11 +55,7 @@ export const postJob = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Unable to create job");
     }
 
-    return res.status(201).json({
-        message: "New job created successfully.",
-        job,
-        success: true
-    });
+    return res.status(201).json(new ApiResponse(201, job, "Job posted successfully"));
 
 })
 

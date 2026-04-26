@@ -78,6 +78,12 @@ function HeroSection() {
                         type="text"
                         placeholder='Find your dream job'
                         onChange={(e) => setQuery(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                e.preventDefault();
+                                searchJobHandler();
+                            }
+                        }}
                         className='outline-none border-none w-full text-sm sm:text-base'
                     />
                     <Button onClick={searchJobHandler} className='rounded-r-full bg-purple-700 w-12 sm:w-16 flex-shrink-0'>

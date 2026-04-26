@@ -3,7 +3,7 @@ import { setAllAdminJobs } from '@/redux/jobSlice'
 import { JOBS_URL } from '@/utils/constant'
 import axios from 'axios'
 import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 
 const useGetAllAdminJobs = () => {
 
@@ -24,6 +24,24 @@ const useGetAllAdminJobs = () => {
             }
         }
         fetchAllAdminJobs();
+
+        const handleWindowFocus = () => {
+            fetchAllAdminJobs();
+        };
+
+        const handleVisibilityChange = () => {
+            if (document.visibilityState === 'visible') {
+                fetchAllAdminJobs();
+            }
+        };
+
+        window.addEventListener('focus', handleWindowFocus);
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+
+        return () => {
+            window.removeEventListener('focus', handleWindowFocus);
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+        };
     }, [])
 }
 

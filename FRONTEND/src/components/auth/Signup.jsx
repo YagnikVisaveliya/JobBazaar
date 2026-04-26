@@ -57,11 +57,11 @@ function Signup() {
             });
             if (res.data.success) {
                 navigate("/login")
-                toast.success(res.data.message);
+                toast.success(res.data.message || "Account created successfully. Please log in.");
             }
         } catch (error) {
             console.log(error);
-            toast.error(error.response?.data?.message || "Network error, please try again");
+            toast.error(error.response?.data?.message || "Unable to create your account. Please try again.");
         }
         finally {
             dispatch(setLoading(false));

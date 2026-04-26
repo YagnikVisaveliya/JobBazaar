@@ -66,11 +66,11 @@ function PostJob() {
         }
       );
       if (res.data.success) {
-        toast.success(res.data.message);
+        toast.success(res.data.message || "Job posted successfully.");
         navigate("/admin/jobs");
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Unable to post the job. Please review details and try again.");
     } finally {
       setLoading(false);
     }

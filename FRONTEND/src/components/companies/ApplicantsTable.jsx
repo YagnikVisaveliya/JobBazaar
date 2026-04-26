@@ -20,10 +20,10 @@ function ApplicantsTable() {
       const res = await axios.post(`${APPLICATION_URL}/status/${applicationId}/update`,{status});
       // console.log(res);
       
-      toast.success("Status updated successfully");
+      toast.success(`Application status updated to ${status}.`);
 
     }catch(error){
-      toast.error(error.response.data.message);
+      toast.error(error.response?.data?.message || "Unable to update application status. Please try again.");
     }
   }
 

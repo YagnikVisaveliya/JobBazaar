@@ -15,6 +15,7 @@ import PostJob from './components/companies/PostJob'
 import Applicants from './components/companies/Applicants'
 import ProtectedRoute from './components/shared/protectedRoute'
 import JobEditPage from './components/companies/JobEdit'
+import UserProtectedRoute from './components/shared/UserProtectedRoute'
 
 const appRouter = createBrowserRouter([
   {
@@ -31,7 +32,7 @@ const appRouter = createBrowserRouter([
   },
   {
     path:'/jobs',
-    element:<Jobs/>
+    element:<UserProtectedRoute><Jobs/></UserProtectedRoute>
   },
   {
     path:'/description/:id',
@@ -39,7 +40,7 @@ const appRouter = createBrowserRouter([
   },
   {
     path:'/browse',
-    element:<Browse/>
+    element:<UserProtectedRoute><Browse/></UserProtectedRoute>
   },
   {
     path:'/profile',
