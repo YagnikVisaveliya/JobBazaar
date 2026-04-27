@@ -72,7 +72,7 @@ function AppliedJobTable() {
             <TableHead>Company</TableHead>
             <TableHead>Salary</TableHead>
             <TableHead>Location</TableHead>
-            <TableHead>Job Type</TableHead>
+            <TableHead>Interview</TableHead>
             <TableHead className="text-right">Status</TableHead>
           </TableRow>
         </TableHeader>
@@ -94,7 +94,20 @@ function AppliedJobTable() {
                 <TableCell>{item?.job?.company?.name}</TableCell>
                 <TableCell>{item?.job?.salary} LPA</TableCell>
                 <TableCell>{item?.job?.location}</TableCell>
-                <TableCell>{item?.job?.jobType}</TableCell>
+                <TableCell>
+                  {item?.interview?.status === 'Scheduled' ? (
+                     <div className="text-xs">
+                        <span className="font-semibold block">{item.interview.mode} Interview</span>
+                        <span>{new Date(item.interview.date).toLocaleDateString()} {item.interview.time}</span>
+                        {item.interview.mode === 'Online' && (
+                            <button onClick={() => window.open(`/interview/${item._id}`, '_blank')} className="block mt-1 text-blue-600 hover:underline">Join Interview</button>
+                        )}
+                        {item.interview.mode === 'On-site' && (
+                            <span className="block mt-1 text-gray-600">At: {item.interview.address}</span>
+                        )}
+                     </div>
+                  ) : <span className="text-gray-400">-</span>}
+                </TableCell>
                 <TableCell className="text-right">
                   <Badge
                     className={`${

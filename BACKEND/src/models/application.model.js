@@ -22,6 +22,15 @@ const applicationSchema = new Schema(
         },
         appliedAt: {
             type: Date, 
+        },
+        interview: {
+            status: { type: String, enum: ['Scheduled', 'Completed', 'Cancelled'] },
+            mode: { type: String, enum: ['On-site', 'Online'] },
+            date: { type: Date },
+            time: { type: String },
+            address: { type: String },
+            link: { type: String },
+            proctoringWarnings: { type: Number, default: 0 }
         }
     },
     {

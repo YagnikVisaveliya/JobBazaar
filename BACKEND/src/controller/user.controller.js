@@ -130,52 +130,25 @@ const login = asyncHandler(async (req, res) => {
 
 })
 
-// const logout = asyncHandler(async (req, res) => {
-//     await User.findByIdAndUpdate(
-//         req.user._id,
-//         {
-//             $unset: {
-//                 refreshToken: 1 // this remove the field from document
-//             }
-//         },
-//         {
-//             new: true
-//         },
-//     )
-//     const options = {
-//         httpOnly: true,
-//         secure: true
-//     }
-//     return res
-//         .status(200)
-//         .clearCookie("accessToken")
-//         .clearCookie("refreshToken")
-//         .json(new ApiResponse(200, {}, "User LogOut Successfully"))
-    
-// })
-// ...existing code...
 const logout = asyncHandler(async (req, res) => {
     try {
-        // Try to obtain user id from req.user (if access token valid)
+        
         let userId = req.user?._id;
 
-        // If no req.user, try decode refresh token from cookie to find the user
         const incomingRefreshToken = req.cookies?.refreshToken;
         if (!userId && incomingRefreshToken) {
             try {
                 const decoded = jwt.verify(incomingRefreshToken, process.env.REFRESH_TOKEN_SECRET);
                 userId = decoded?._id;
-            } catch (e) {
-                // ignore decode error
+            } catch (error) {
+                console.log(error)
             }
         }
 
-        // If we have a user id, remove refreshToken from DB
         if (userId) {
             await User.findByIdAndUpdate(userId, { $unset: { refreshToken: 1 } }, { new: true });
         }
 
-        // Use cookie options compatible with dev (only secure in production)
         const clearOptions = {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
@@ -183,7 +156,6 @@ const logout = asyncHandler(async (req, res) => {
             path: "/"
         };
 
-        // Always clear cookies in response
         res.clearCookie("accessToken", clearOptions);
         res.clearCookie("refreshToken", clearOptions);
 
@@ -205,10 +177,13 @@ const updateProfile = asyncHandler(async (req, res) => {
         let cloudResponse;
         const file = req.file;
         if (file) {
-            const fileUri = dataUri(file);
-            // console.log("File received:", req.file);
-            cloudResponse = await cloudinary.uploader.upload(fileUri.content);
-        }
+        const fileUri = dataUri(file);
+
+        cloudResponse = await cloudinary.uploader.upload(fileUri.content, {
+        type: "upload",        
+        access_mode: "public"
+      });      
+    }
 
 
 

@@ -48,31 +48,6 @@ export const postApplication = asyncHandler(async(req,res)=>{ //job seeker only 
     .status(200)
     .json(new ApiResponse(201,application,"Application created successfully"))
 
-    // const { jobId } = req.params;
-    
-    // if(!req.user){
-    //     throw new ApiError(401,"user not authenticated");
-    // }
-    
-    // const applicantId = req.user._id;
-    
-    // if(!jobId){
-    //     throw new ApiError(400,"jobID is required")
-    // }
-    
-    // const application = await Application.create({
-    //     job:jobId,
-    //     applicant:applicantId,
-    //     appliedAt:Date.now()
-    // })
-    
-    // if(!application){
-    //     throw new ApiError(500,"application not create")
-    // }
-
-    // await Job.findByIdAndUpdate(jobId, { $push: { applicants: application._id } });
-
-
 });
 
 export const deleteApplication = asyncHandler(async(req,res)=>{
@@ -141,7 +116,9 @@ export const updateStatus = asyncHandler(async (req, res) => {
     if (!application) {
         throw new ApiError(404, 'Application not found');
     }
-
+    if(application.status === 'Accepted'){
+        throw new ApiError(400, "Cannot update status of an already accepted application");
+    }
     application.status = status;
     await application.save();
     return res.status(200).json({
@@ -150,3 +127,68 @@ export const updateStatus = asyncHandler(async (req, res) => {
     });
 });
 
+import crypto from "crypto";
+
+export const scheduleInterview = asyncHandler(async (req, res) => {
+    const appId = req.params.id;
+    const { mode, date, time, address } = req.body;
+
+    if (!mode || !date || !time) {
+        throw new ApiError(400, "Mode, date, and time are required");
+    }
+
+    const application = await Application.findById(appId);
+    if (!application) {
+        throw new ApiError(404, "Application not found");
+    }
+
+    application.interview = {
+        status: 'Scheduled',
+        mode,
+        date,
+        time,
+    };
+
+    if (mode === 'On-site') {
+        if (!address) {
+            throw new ApiError(400, "Address is required for On-site interviews");
+        }
+        application.interview.address = address;
+    } else if (mode === 'Online') {
+        application.interview.link = crypto.randomUUID(); // generate unique room ID
+    }
+
+    // Usually when scheduling, you'd make sure status is Accepted or something similar.
+    // If not already accepted, we can update it, or assume it's done beforehand.
+    if(application.status !== 'Accepted') {
+         application.status = 'Accepted';
+    }
+
+    await application.save();
+
+    return res.status(200).json(new ApiResponse(200, application, "Interview scheduled successfully"));
+});
+
+export const reportProctoringViolation = asyncHandler(async (req, res) => {
+    const appId = req.params.id;
+    const application = await Application.findById(appId);
+    
+    if (!application) {
+        throw new ApiError(404, "Application not found");
+    }
+
+    if (!application.interview) {
+        throw new ApiError(400, "No interview scheduled");
+    }
+
+    application.interview.proctoringWarnings = (application.interview.proctoringWarnings || 0) + 1;
+    
+    // Auto reject if warnings exceed a threshold (e.g., 3)
+    // if(application.interview.proctoringWarnings >= 3) {
+    //     application.status = 'Rejected';
+    // }
+
+    await application.save();
+
+    return res.status(200).json(new ApiResponse(200, application, "Proctoring violation recorded"));
+});

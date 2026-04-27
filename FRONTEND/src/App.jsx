@@ -16,6 +16,7 @@ import Applicants from './components/companies/Applicants'
 import ProtectedRoute from './components/shared/protectedRoute'
 import JobEditPage from './components/companies/JobEdit'
 import UserProtectedRoute from './components/shared/UserProtectedRoute'
+import InterviewRoom from './components/InterviewRoom'
 
 const appRouter = createBrowserRouter([
   {
@@ -73,6 +74,10 @@ const appRouter = createBrowserRouter([
   {
     path:'/admin/jobs/:id/edit',
     element:<ProtectedRoute><JobEditPage/></ProtectedRoute>
+  },
+  {
+    path:'/interview/:id',
+    element:<InterviewRoom/>
   }
 ])
 
