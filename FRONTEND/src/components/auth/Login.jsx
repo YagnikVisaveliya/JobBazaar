@@ -40,6 +40,9 @@ function Login() {
       });
 
       if (res.data.success) {
+        if (res.data?.data?.accessToken) {
+          localStorage.setItem("accessToken", res.data.data.accessToken);
+        }
         dispatch(setUser(res.data.data.user));
         navigate("/");
         toast.success(res.data.message || "Logged in successfully.");
