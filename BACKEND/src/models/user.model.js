@@ -38,11 +38,13 @@ const userSchema = new Schema(
                 type:String,
                 default:"",
                 
-            }
-            // type: Schema.Types.ObjectId,
-            // ref: function() {
-            //     return this.role === 'jobseeker' ? 'JobSeekerProfile' : 'EmployerProfile';
-            // }
+            },
+            savedJobs: [
+                {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: 'Job'
+                }
+            ]
         },
         refreshToken: {
             type: String

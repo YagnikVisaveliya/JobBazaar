@@ -84,17 +84,18 @@ import { Badge } from './ui/badge'
 import { Label } from './ui/label'
 import AppliedJobTable from './AppliedJobTable'
 import UpdateProfile from './UpdateProfile'
+import SavedJobs from './SavedJobs'
 import { useSelector } from 'react-redux'
 import store from '@/redux/store'
 import useGetAppliedJobs from '@/hooks/useGetAppliedJobs'
 
-// const skills = ['HTML', 'CSS', 'JavaScript', 'React'];
 const resume = true;
 
 function Profile() {
     useGetAppliedJobs();
-    const [open,setOpen] = useState(false);
-    const {user} = useSelector(store=>store.auth);
+    const [open, setOpen] = useState(false);
+    const [activeTab, setActiveTab] = useState('applied');
+    const { user } = useSelector(store => store.auth);
     return (
         <div className='px-4 sm:px-6 lg:px-8'>
             <Navbar />
@@ -109,7 +110,7 @@ function Profile() {
                             <p className='text-sm sm:text-base'>{user?.profile?.bio}</p>
                         </div>
                     </div>
-                    <Button onClick={()=> setOpen(true)} className='w-full sm:w-auto text-right' variant='outline'><Pen /></Button>
+                    <Button onClick={() => setOpen(true)} className='w-full sm:w-auto text-right' variant='outline'><Pen /></Button>
                 </div>
                 <div className='my-5 space-y-3'>
                     <div className='flex items-center gap-3'>
@@ -136,9 +137,22 @@ function Profile() {
                     }
                 </div>
             </div>
-            <div className='max-w-4xl mx-auto bg-white rounded-2xl p-4 sm:p-6'>
-                <h1 className='font-bold text-lg sm:text-xl my-5'>Applied Jobs</h1>
-                <AppliedJobTable/>
+            <div className='max-w-4xl mx-auto bg-white rounded-2xl p-4 sm:p-6 my-5'>
+                <div className='flex items-center gap-5 border-b border-gray-200 pb-2 mb-5'>
+                    <h1 
+                        onClick={() => setActiveTab('applied')}
+                        className={`font-bold text-lg sm:text-xl cursor-pointer ${activeTab === 'applied' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
+                    >
+                        Applied Jobs
+                    </h1>
+                    <h1 
+                        onClick={() => setActiveTab('saved')}
+                        className={`font-bold text-lg sm:text-xl cursor-pointer ${activeTab === 'saved' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500'}`}
+                    >
+                        Saved Jobs
+                    </h1>
+                </div>
+                {activeTab === 'applied' ? <AppliedJobTable/> : <SavedJobs />}
             </div>
             <UpdateProfile open={open} setOpen={setOpen}/>
         </div>

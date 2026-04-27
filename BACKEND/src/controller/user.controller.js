@@ -302,10 +302,52 @@ const changeCurrentPassword = asyncHandler(async (req, res) => {
     return res
         .status(200)
         .json(new ApiResponse(200, {}, "password change successfully"))
-})
+});
 
+export const toggleSaveJob = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+    const { jobId } = req.params;
 
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
 
+    const isSaved = user.profile.savedJobs.includes(jobId);
+
+    if (isSaved) {
+        // Remove from saved jobs
+        user.profile.savedJobs = user.profile.savedJobs.filter(id => id.toString() !== jobId);
+    } else {
+        // Add to saved jobs
+        user.profile.savedJobs.push(jobId);
+    }
+
+    await user.save({ validateBeforeSave: false });
+
+    return res.status(200).json(
+        new ApiResponse(200, { isSaved: !isSaved }, isSaved ? "Job removed from saved list" : "Job saved successfully")
+    );
+});
+
+export const getSaveJobs = asyncHandler(async (req, res) => {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId).populate({
+        path: 'profile.savedJobs',
+        populate: {
+            path: 'company'
+        }
+    });
+
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, user.profile.savedJobs, "Saved jobs fetched successfully")
+    );
+});
 
 export {
     register,
@@ -313,11 +355,7 @@ export {
     logout,
     refreshAccessToken,
     changeCurrentPassword,
-    updateProfile
-
-
-
-
+    updateProfile,
 }
 
 
