@@ -1,5 +1,11 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+const sanitizeUser = (user) => {
+  if (!user || typeof user !== "object") return user;
+  const { password, refreshToken, ...safeUser } = user;
+  return safeUser;
+};
+
 const authSlice = createSlice({
   name: "auth",
   initialState: {   
@@ -11,7 +17,7 @@ const authSlice = createSlice({
       state.loading = action.payload;
     },
     setUser: (state, action) => {
-      state.user = action.payload;
+      state.user = sanitizeUser(action.payload);
     }
     
   },

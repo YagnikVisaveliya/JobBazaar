@@ -36,7 +36,7 @@ const register = asyncHandler(async (req, res) => {
     // check if user already exists - e.g., by email, username, etc.
 
     const { fullname, email, phoneNumber, password, role } = req.body;
-    console.log(fullname, email, phoneNumber, password, role);
+    console.log(fullname, email, phoneNumber, role);
 
 
     if ([fullname, email, phoneNumber, password, role].some((fields) => !String(fields ?? "").trim())) {

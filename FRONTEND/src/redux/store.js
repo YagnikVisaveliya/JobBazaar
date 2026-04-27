@@ -58,6 +58,7 @@
 
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
+import { createMigrate } from "redux-persist";
 import storage from "redux-persist/lib/storage";  // uses localStorage for web
 import authSlice from "./authSlice";
 import jobSlice from "./jobSlice";
@@ -71,10 +72,31 @@ const rootReducer = combineReducers({
   application: applicationsSlice
 });
 
+const removeSensitiveUserFields = (state) => {
+  if (!state?.auth?.user || typeof state.auth.user !== "object") {
+    return state;
+  }
+
+  const { password, refreshToken, ...safeUser } = state.auth.user;
+  return {
+    ...state,
+    auth: {
+      ...state.auth,
+      user: safeUser,
+    },
+  };
+};
+
+const migrations = {
+  2: (state) => removeSensitiveUserFields(state),
+};
+
 // Configuration for persistence
 const persistConfig = {
   key: "root",         // key in storage
+  version: 2,
   storage,             // storage engine (localStorage)
+  migrate: createMigrate(migrations, { debug: false }),
 //   whitelist: ["auth", "company"] // which slices you want to persist
   // you can also opt for `blacklist` to exclude slices
 };
