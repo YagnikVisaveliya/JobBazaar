@@ -9,6 +9,6 @@ router.route('/adminjobs').get(verifyJWT,getMyJobs);
 router.route('/:id/delete').delete(verifyJWT,deleteJob);
 
 router.route('/get').get(getAllJobs);
-router.route('/get/:id').get(verifyJWT,getJobById)
+router.route('/get/:id').get(getJobById)
 
 export default router;
