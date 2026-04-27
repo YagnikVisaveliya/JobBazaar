@@ -26,6 +26,7 @@ const Navbar = () => {
 
       if (res.data.success) {
         localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
         dispatch(setUser(null));
         navigate("/");
         toast.success(res.data.message || "Logged out successfully.");

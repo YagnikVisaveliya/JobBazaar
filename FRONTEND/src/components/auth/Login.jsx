@@ -43,6 +43,9 @@ function Login() {
         if (res.data?.data?.accessToken) {
           localStorage.setItem("accessToken", res.data.data.accessToken);
         }
+        if (res.data?.data?.refreshToken) {
+          localStorage.setItem("refreshToken", res.data.data.refreshToken);
+        }
         dispatch(setUser(res.data.data.user));
         navigate("/");
         toast.success(res.data.message || "Logged in successfully.");
