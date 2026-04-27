@@ -86,6 +86,10 @@ function Job({ job }) {
             }
         } catch (error) {
             console.log(error);
+            if (!error.response) {
+                toast.error('Backend server is not reachable. Start backend on http://localhost:8000');
+                return;
+            }
             toast.error(error.response?.data?.message || 'Failed to toggle save');
         }
     };
