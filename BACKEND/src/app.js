@@ -3,13 +3,26 @@ import cors from"cors"
 import cookieParser from "cookie-parser";
 
 const app = express();
-const FRONTEND_URL = 'https://job-bazaar.vercel.app';
-const WHITELIST = [FRONTEND_URL, 'http://localhost:5173', 'http://127.0.0.1:5173'];
+const DEFAULT_WHITELIST = [
+  "https://job-bazaar.vercel.app",
+  "https://jobbazaar.vercel.app",
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+];
+
+const envOrigins = (process.env.CORS_ORIGIN || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const WHITELIST = [...new Set([...DEFAULT_WHITELIST, ...envOrigins])];
 
 // normalize helper to remove trailing slashes
 const normalize = (u) => (typeof u === 'string' ? u.replace(/\/+$/, '') : u);
 
 const normalizedWhitelist = WHITELIST.map(normalize);
+
+app.set("trust proxy", 1);
 
 app.use(cors({
   origin: function(origin, callback) {

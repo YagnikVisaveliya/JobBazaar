@@ -6,6 +6,13 @@ import jwt from "jsonwebtoken";
 import dataUri from "../utils/dataUri.js";
 import cloudinary from "../utils/cloudinary.js";
 
+const getCookieOptions = () => ({
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    path: "/",
+});
+
 
 const generateAccessAndRefreshToken = async (userId) => {
     try {
@@ -107,11 +114,7 @@ const login = asyncHandler(async (req, res) => {
 
     const loggedInUser = await User.findById(user._id).select("-password -refreshToken")
 
-    const options = { // cookie not modify in frontend olny modified in beckend side
-        httpOnly: true,
-        secure: true,
-        sameSite: "None"
-    }
+    const options = getCookieOptions();
 
     return res.status(200)
         .cookie("accessToken", accessToken, options)
@@ -139,12 +142,7 @@ const logout = asyncHandler(async (req, res) => {
             await User.findByIdAndUpdate(userId, { $unset: { refreshToken: 1 } }, { new: true });
         }
 
-        const clearOptions = {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-            path: "/"
-        };
+        const clearOptions = getCookieOptions();
 
         res.clearCookie("accessToken", clearOptions);
         res.clearCookie("refreshToken", clearOptions);
@@ -230,7 +228,7 @@ const updateProfile = asyncHandler(async (req, res) => {
 
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
-    const incomingRefreshToken = req.cookie.refreshToken || req.body.refreshToken
+    const incomingRefreshToken = req.cookies?.refreshToken || req.body.refreshToken
 
     if (!incomingRefreshToken) {
         throw new ApiError(401, "unauthorized request")
@@ -252,10 +250,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
             throw new ApiError(401, "Refresh Token Is Expire or used")
         }
 
-        const options = {
-            httpOnly: true,
-            secure: true
-        }
+        const options = getCookieOptions();
 
         const { accessToken, refreshToken: newRefreshToken } = await generateAccessAndRefreshToken(user._id)
 
