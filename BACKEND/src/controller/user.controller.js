@@ -109,24 +109,14 @@ const login = asyncHandler(async (req, res) => {
 
     const options = { // cookie not modify in frontend olny modified in beckend side
         httpOnly: true,
-        secure: true
+        secure: true,
+        sameSite: "None"
     }
 
     return res.status(200)
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
-        // .json(
-        //     new ApiResponse(
-        //         200,
-        //         {
-        //             user: loggedInUser,
-        //             accessToken,
-        //             refreshToken
-        //         },
-        //         "User logged In SuccessFully"
-        //     )
-        // )
-        .json(new ApiResponse(200, { user, accessToken, refreshToken }, "User logged In Successfully"));
+        .json(new ApiResponse(200, { user: loggedInUser, accessToken, refreshToken }, "User logged In Successfully"));
 
 })
 
